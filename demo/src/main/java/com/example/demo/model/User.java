@@ -1,0 +1,129 @@
+package com.example.demo.model;
+
+import jakarta.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
+
+
+@Entity
+@Table(name = "user")
+public class User {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int userId;
+
+    @Column
+    private String name;
+
+    @Column
+    private String username;
+
+    @Column(unique = true, nullable = false)
+    private String email;
+
+    @Column(unique = true, nullable = false)
+    private String auth0id;
+
+    @Column(length = 2000)
+    private String imageUrl;
+
+
+    @ManyToMany
+    @JoinTable(
+            name = "user_follows",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "followed_user_id"))
+    private List<User> follows = new ArrayList<>();
+
+    @ManyToMany(mappedBy = "follows")
+    private List<User> followers = new ArrayList<>();
+
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getAuth0id() {
+        return auth0id;
+    }
+
+    public void setAuth0id(String auth0id) {
+        this.auth0id = auth0id;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public List<User> getFollows() {
+        return follows;
+    }
+
+    public void setFollows(List<User> follows) {
+        this.follows = follows;
+    }
+
+    public List<User> getFollowers() {
+        return followers;
+    }
+
+    public void setFollowers(List<User> followers) {
+        this.followers = followers;
+    }
+
+    public void follow(User userToFollow) {
+        if (!this.follows.contains(userToFollow)) {
+            this.follows.add(userToFollow);
+        }
+    }
+
+    public void unfollow(User userToUnfollow) {
+        this.follows.remove(userToUnfollow);
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "userId=" + userId +
+                ", name='" + name + '\'' +
+                ", username='" + username + '\'' +
+                ", email='" + email + '\'' +
+                ", auth0id='" + auth0id + '\'' +
+                ", imageUrl='" + imageUrl + '\'' +
+                '}';
+    }
+
+}
