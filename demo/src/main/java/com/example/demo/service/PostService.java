@@ -1,11 +1,14 @@
 package com.example.demo.service;
 
+
+import com.example.demo.serviceInterface.IPostService;
 import com.example.demo.dto.PostDTO;
 import com.example.demo.mapper.PostMapper;
 import com.example.demo.model.Post;
 import com.example.demo.model.User;
 import com.example.demo.repository.PostRepository;
 import com.example.demo.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 
@@ -14,16 +17,13 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 @Service
-public class PostService {
+public class PostService implements IPostService {
+    @Autowired
+    PostRepository postRepository;
+    @Autowired
+    UserRepository userRepository;
 
-    private final PostRepository postRepository;
-    private final UserRepository userRepository;
     private static final PostMapper postMapper = PostMapper.INSTANCE;
-
-    public PostService(PostRepository postRepository, UserRepository userRepository) {
-        this.postRepository = postRepository;
-        this.userRepository = userRepository;
-    }
 
     public PostDTO getPostById(int id){
         Post post = postRepository.findById(id).orElseThrow(()-> new NoSuchElementException("Post no encontrado"));
@@ -35,24 +35,12 @@ public class PostService {
         return  posts.stream().map(postMapper::postToPostDTO).toList();
     }
 
-    public PostDTO createPostFromDTO(PostDTO postDTO) {
-        User user = userRepository.findUserByauth0id(postDTO.getUser().getAuth0id());
-        if (user == null) {
-            throw new NoSuchElementException("Usuario no encontrado");
-        }
-
-        Post post = postMapper.postDTOToPost(postDTO);
-        post.setUser(user);
-        post.setPostDate(LocalDate.now());
-
-        postRepository.save(post);
-
-        return postMapper.postToPostDTO(post);
-    }
-
 
     public Post createPost(String auth0id, String title, String content, String category) {
         User existingUser = userRepository.findUserByauth0id(auth0id);
+        if(existingUser == null){
+            throw new NoSuchElementException("El usuario no encontrado");
+        }
 
         Post newPost = new Post();
         newPost.setTitle(title);
@@ -75,6 +63,12 @@ public class PostService {
                 .map(postMapper::postToPostDTO).toList();
     }
 
-
+    public void deletePost(int postId) {
+        Post post = postRepository.findBypostId(postId);
+        if (post == null) {
+            throw new NoSuchElementException("Post no encontrado");
+        }
+        postRepository.delete(post);
+    }
 
 }

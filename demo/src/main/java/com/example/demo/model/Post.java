@@ -3,6 +3,7 @@ package com.example.demo.model;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 
+
 @Entity
 @Table(name = "post")
 public class Post {
@@ -13,7 +14,7 @@ public class Post {
 
 
     @ManyToOne
-    @JoinColumn(name = "userId")
+    @JoinColumn(name = "userId", nullable = false)
     private User user;
 
     @Column(nullable = false)
@@ -29,6 +30,7 @@ public class Post {
     @Column
     private String category;
 
+
     public int getPostId() {
         return postId;
     }
@@ -36,8 +38,6 @@ public class Post {
     public void setPostId(int postId) {
         this.postId = postId;
     }
-
-
 
     public User getUser() {
         return user;

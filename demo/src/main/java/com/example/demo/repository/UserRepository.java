@@ -17,6 +17,8 @@ public interface UserRepository extends JpaRepository <User, Integer> {
 
     List<User> findFollowersByauth0id(String auth0id);
 
+
+
 }
 
 

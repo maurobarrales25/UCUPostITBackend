@@ -1,10 +1,11 @@
 package com.example.demo.controller;
 
+import com.example.demo.serviceInterface.IUserService;
 import com.example.demo.dto.FollowRequestDTO;
 import com.example.demo.dto.UserDTO;
 import com.example.demo.model.User;
-import com.example.demo.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,12 +17,8 @@ import java.util.List;
 public class UserController {
 
 
-    private final UserService userService;
-
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
-
+    @Autowired
+    IUserService userService;
 
     @GetMapping("/getUserById/{id}")
     public ResponseEntity<UserDTO> getUserById(@PathVariable int id){

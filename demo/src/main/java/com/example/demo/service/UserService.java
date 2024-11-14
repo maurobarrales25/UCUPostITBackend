@@ -1,22 +1,23 @@
 package com.example.demo.service;
 
+import com.example.demo.serviceInterface.IUserService;
 import com.example.demo.dto.UserDTO;
 import com.example.demo.mapper.UserMapper;
 import com.example.demo.model.User;
 import com.example.demo.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.NoSuchElementException;
 
 @Service
-public class UserService {
+public class UserService implements IUserService {
 
-    public UserService(UserRepository userRepository){
-        this.userRepository = userRepository;
-    }
+    @Autowired
+    UserRepository userRepository;
 
-    private final UserRepository userRepository;
     private static final UserMapper userMapper = UserMapper.INSTANCE;
 
     public UserDTO getUserById(int id){
@@ -50,7 +51,7 @@ public class UserService {
          return  userMapper.userToUserDTO(savedUser);
     }
 
-    private User findUserByAuth0IdOrThrow(String auth0Id) {
+    public User findUserByAuth0IdOrThrow(String auth0Id) {
         User user = userRepository.findUserByauth0id(auth0Id);
         if (user == null) {
             throw new EntityNotFoundException("No hay usuario con ese auth0Id");
@@ -83,6 +84,7 @@ public class UserService {
                 .map(userMapper::userToUserDTO).toList();
     }
 
+    @Transactional
     public void followUser(String auth0Id, String auth0IdToFollow) {
         User user = findUserByAuth0IdOrThrow(auth0Id);
         User userToFollow = findUserByAuth0IdOrThrow(auth0IdToFollow);
@@ -93,6 +95,7 @@ public class UserService {
         userRepository.save(user);
     }
 
+    @Transactional
     public void unfollowUser(String auth0id, String auth0IdToUnfollow){
         User user = findUserByAuth0IdOrThrow(auth0id);
         User userToUnfollow = findUserByAuth0IdOrThrow(auth0IdToUnfollow);
@@ -102,12 +105,4 @@ public class UserService {
         }
         userRepository.save(user);
     }
-
-
-
-
-
-
-
-
 }
