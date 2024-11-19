@@ -1,6 +1,7 @@
 package com.example.demo.model;
 
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -14,10 +15,12 @@ public class Comment {
     private int commentId;
 
     @ManyToOne
+    @JsonManagedReference
     @JoinColumn(name = "userId", nullable = false)
     private User user;
 
     @ManyToOne
+    @JsonManagedReference
     @JoinColumn(name= "postId", nullable = false)
     private Post post;
 

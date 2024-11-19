@@ -17,6 +17,8 @@ public interface UserMapper {
     @Mapping(source = "email", target = "email")
     @Mapping(source = "auth0id", target = "auth0id")
     @Mapping(source = "imageUrl", target = "imageUrl")
+    @Mapping(target = "follows", ignore = true)  // Ignorar la propiedad 'follows'
+    @Mapping(target = "followers", ignore = true)  // Ignorar la propiedad 'followers'
     UserDTO userToUserDTO(User user);
 
     @Mapping(source = "userId", target = "userId")
@@ -25,5 +27,8 @@ public interface UserMapper {
     @Mapping(source = "email", target = "email")
     @Mapping(source = "auth0id", target = "auth0id")
     @Mapping(source = "imageUrl", target = "imageUrl")
+    @Mapping(target = "follows", ignore = true)  // Ignorar la propiedad 'follows'
+    @Mapping(target = "followers", ignore = true)  // Ignorar la propiedad 'followers'
     User userDTOToUser(UserDTO userDTO);
 }
+

@@ -21,7 +21,7 @@ public interface CommentMapper {
 
     @Mapping(source = "commentId", target = "commentId")
     @Mapping(source = "user", target = "user")
-    @Mapping(source = "post", target = "post")
+    @Mapping(ignore = true, target = "post")
     @Mapping(source = "content", target = "content")
     @Mapping(source = "authorName", target = "authorName")
     @Mapping(source = "commentDate", target = "commentDate")

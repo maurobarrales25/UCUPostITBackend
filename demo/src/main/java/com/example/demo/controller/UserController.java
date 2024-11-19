@@ -1,7 +1,7 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.FollowUnfollowRequestDTO;
 import com.example.demo.serviceInterface.IUserService;
-import com.example.demo.dto.FollowRequestDTO;
 import com.example.demo.dto.UserDTO;
 import com.example.demo.model.User;
 import jakarta.persistence.EntityNotFoundException;
@@ -14,6 +14,7 @@ import java.util.List;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
+@RequestMapping(path = "/user")
 public class UserController {
 
 
@@ -26,7 +27,7 @@ public class UserController {
         return ResponseEntity.ok(userDTO);
     }
 
-    @GetMapping("/user/getAll")
+    @GetMapping("/getAll")
     public ResponseEntity<List<UserDTO>> getAllUser(){
         List<UserDTO> userDTOList = userService.getAllUser();
         return ResponseEntity.ok(userDTOList);
@@ -56,17 +57,13 @@ public class UserController {
 
     @PostMapping("/createUser")
     public UserDTO createUser(@RequestBody User user) {
-        System.out.println(user.toString());
-        UserDTO userDTO = userService.createOrGetUser(user.getAuth0id(), user.getName(), user.getEmail(), user.getImageUrl());
+         UserDTO userDTO = userService.createOrGetUser(user.getAuth0id(), user.getName(), user.getEmail(), user.getImageUrl());
         return userDTO;
     }
 
     @PostMapping("/follow")
-    public ResponseEntity<Void> followUser(@RequestBody FollowRequestDTO followRequest) {
+    public ResponseEntity<Void> followUser(@RequestParam String auth0Id, @RequestParam String auth0IdToFollow) {
         try {
-            String auth0Id = followRequest.getAuth0Id();
-            String auth0IdToFollow = followRequest.getAuth0IdToFollow();
-
             userService.followUser(auth0Id, auth0IdToFollow);
 
             return ResponseEntity.ok().build();
@@ -74,7 +71,6 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
-
 
     @PostMapping("/unfollow")
     public ResponseEntity<Void> unfollowUser(@RequestParam String auth0Id, @RequestParam String auth0IdToUnfollow) {
@@ -85,4 +81,18 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
+
+    @GetMapping("/isFollowing")
+    public ResponseEntity<Boolean> getFollowStatus(@RequestBody FollowUnfollowRequestDTO followUnfollowRequestDTO) {
+        boolean isFollowing = userService.isFollowing(followUnfollowRequestDTO);
+        return ResponseEntity.ok(isFollowing);
+    }
+
+    @PostMapping("/toggleFollow")
+    public ResponseEntity<Void> toggleFollow(@RequestBody FollowUnfollowRequestDTO followUnfollowRequestDTO) {
+        userService.toggleFollowUser(followUnfollowRequestDTO);
+        return ResponseEntity.ok().build();
+    }
+
+
 }

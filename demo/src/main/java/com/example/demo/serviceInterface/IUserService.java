@@ -1,6 +1,7 @@
 package com.example.demo.serviceInterface;
 
 
+import com.example.demo.dto.FollowUnfollowRequestDTO;
 import com.example.demo.dto.UserDTO;
 import com.example.demo.model.User;
 
@@ -25,5 +26,9 @@ public interface IUserService {
     void followUser(String auth0Id, String auth0IdToFollow);
 
     void unfollowUser(String auth0id, String auth0IdToUnfollow);
+
+    boolean isFollowing(FollowUnfollowRequestDTO followUnfollowRequestDTO);
+
+    void toggleFollowUser(FollowUnfollowRequestDTO followUnfollowRequestDTO);
 
 }

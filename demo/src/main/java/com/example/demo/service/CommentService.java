@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 import com.example.demo.dto.CommentDTO;
+import com.example.demo.dto.SaveCommentDTO;
 import com.example.demo.mapper.CommentMapper;
 import com.example.demo.model.Comment;
 import com.example.demo.model.Post;
@@ -28,24 +29,27 @@ public class CommentService implements ICommentService {
 
     private static final CommentMapper commentMapper = CommentMapper.INSTANCE;
 
-    public CommentDTO getPostById(int id){
-        Comment comment = commentRepository.findById(id);
+    public CommentDTO getCommentById(int id){
+        Comment comment = commentRepository.findByCommentId(id);
         if(comment == null){
             throw new NoSuchElementException();
         }
         return commentMapper.commentToCommentDTO(comment);
     }
 
-    public Comment createComment(String auth0id, Integer postId, String content ) {
-        User existingUser = userRepository.findUserByauth0id(auth0id);
-        Post existingPost = postRepository.findBypostId(postId);
+    public Comment createComment(SaveCommentDTO commentDTO ) {
+        User existingUser = userRepository.findUserByauth0id(commentDTO.getAuth0id());
+        Post existingPost = postRepository.findBypostId(commentDTO.getPostId());
 
         Comment newComment = new Comment();
         newComment.setUser(existingUser);
         newComment.setPost(existingPost);
-        newComment.setContent(content);
+        newComment.setContent(commentDTO.getContent());
         newComment.setCommentDate(LocalDate.now());
-        return commentRepository.save(newComment);
+
+        commentRepository.save(newComment);
+
+        return newComment;
     }
 
     public List<CommentDTO> getCommentsFromAuthor(String auth0id ) {
@@ -54,15 +58,14 @@ public class CommentService implements ICommentService {
                 .map(commentMapper::commentToCommentDTO).toList();
     }
 
-    public List<CommentDTO> getCommentsFromPost(int postId ) {
-        List<Comment> comments = commentRepository.findByPost_PostId(postId);
-        return comments.stream()
-                .map(commentMapper::commentToCommentDTO).toList();
+    public List<Comment> getCommentsFromPost(int postId ) {
+        List<Comment> comments = commentRepository.findCommentsByPostId(postId);
+        return comments;
 
     }
 
     public void deleteComment(int commentId) {
-        Comment comment = commentRepository.findById(commentId);
+        Comment comment = commentRepository.findByCommentId(commentId);
         if (comment == null) {
             throw new NoSuchElementException("Comentario no encontrado");
         }

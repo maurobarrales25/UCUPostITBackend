@@ -1,5 +1,6 @@
 package com.example.demo.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,9 +35,11 @@ public class User {
             name = "user_follows",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "followed_user_id"))
+    @JsonIgnore
     private List<User> follows = new ArrayList<>();
 
-    @ManyToMany(mappedBy = "follows")
+    @ManyToMany (mappedBy = "follows")
+    @JsonIgnore
     private List<User> followers = new ArrayList<>();
 
 
@@ -107,11 +110,34 @@ public class User {
     public void follow(User userToFollow) {
         if (!this.follows.contains(userToFollow)) {
             this.follows.add(userToFollow);
+            userToFollow.addFollower(this);
         }
     }
 
     public void unfollow(User userToUnfollow) {
         this.follows.remove(userToUnfollow);
+
+    }
+
+    public void addFollower(User userToAdd) {
+        if (!this.follows.contains(userToAdd)) {
+            this.follows.add(userToAdd);
+            userToAdd.addFollower(this);
+        }
+    }
+
+    public void removeFollower(User userToRemove) {
+        if (this.followers.contains(userToRemove)) {
+            this.followers.remove(userToRemove);
+        }
+    }
+
+    public boolean isFollowing(User userToFollow) {
+        return this.followers.contains(userToFollow);
+    }
+
+    public boolean isFollower(User userToFollow) {
+        return this.followers.contains(userToFollow);
     }
 
     @Override

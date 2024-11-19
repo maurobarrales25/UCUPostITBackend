@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import com.example.demo.dto.FollowUnfollowRequestDTO;
 import com.example.demo.serviceInterface.IUserService;
 import com.example.demo.dto.UserDTO;
 import com.example.demo.mapper.UserMapper;
@@ -104,5 +105,27 @@ public class UserService implements IUserService {
             user.unfollow(userToUnfollow);
         }
         userRepository.save(user);
+    }
+
+    public boolean isFollowing(FollowUnfollowRequestDTO followUnfollowRequestDTO){
+        User user = findUserByAuth0IdOrThrow(followUnfollowRequestDTO.getAuth0id());
+        User userToFollow = findUserByAuth0IdOrThrow(followUnfollowRequestDTO.getAuth0idToFollowUnfollow());
+        return user.isFollowing(userToFollow);
+    }
+
+    public void toggleFollowUser(FollowUnfollowRequestDTO followUnfollowRequestDTO) {
+        User user = findUserByAuth0IdOrThrow(followUnfollowRequestDTO.getAuth0id());
+        User userToFollow = findUserByAuth0IdOrThrow(followUnfollowRequestDTO.getAuth0idToFollowUnfollow());
+
+        if (user.isFollowing(userToFollow)) {
+            user.unfollow(userToFollow);
+            userToFollow.removeFollower(user);
+        } else {
+            user.follow(userToFollow);
+            userToFollow.addFollower(user);
+        }
+
+        userRepository.save(user);
+        userRepository.save(userToFollow);
     }
 }
